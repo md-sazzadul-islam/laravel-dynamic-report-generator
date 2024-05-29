@@ -1,0 +1,27 @@
+{
+    "name": "md-sazzadul-islam/laravel-dynamic-report-generator",
+    "description": "A package for dynamic report generation with drag-and-drop interface in Laravel",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sazzad\\LaravelDynamicReportGenerator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Md Sazzadul islam",
+            "email": "sazzadulislam6@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sazzad\\LaravelDynamicReportGenerator\\ReportGeneratorServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    }
+}
