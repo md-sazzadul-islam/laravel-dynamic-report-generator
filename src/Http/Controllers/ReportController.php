@@ -1,11 +1,11 @@
 <?php
 // src/Http/Controllers/ReportController.php
-namespace Sazzad\LaravelDynamicReportGenerator\Http\Controllers;
+namespace DevForest\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Sazzad\LaravelDynamicReportGenerator\Models\GeneratedReport;
+use DevForest\Models\GeneratedReport;
 
 class ReportController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 // src/ReportGeneratorServiceProvider.php
-namespace Sazzad\LaravelDynamicReportGenerator;
+namespace DevForest;
 
 use Illuminate\Support\ServiceProvider;
 

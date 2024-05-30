@@ -15,16 +15,16 @@
 <p>To install the package, follow these steps:</p>
 <ol>
     <li>Add the package to your Laravel project using Composer:
-        <pre><code>composer require md-sazzadul-islam/laravel-dynamic-report-generator</code></pre>
+        <pre><code>composer require devfores/laravel-dynamic-report-generator</code></pre>
     </li>
     <li>If not automatically registered, add the service provider to <code>config/app.php</code>:
         <pre><code>'providers' => [
     // ...
-    Sazzad\LaravelDynamicReportGenerator\LaravelDynamicReportGeneratorServiceProvider::class,
+    DevForest\\ReportGeneratorServiceProvider::class,
 ];</code></pre>
     </li>
     <li>Publish the package assets:
-        <pre><code>php artisan vendor:publish --provider="Sazzad\LaravelDynamicReportGenerator\ReportGeneratorServiceProvider" --tag=migration</code></pre>
+        <pre><code>php artisan vendor:publish --provider="DevForest\ReportGeneratorServiceProvider" --tag=migrations</code></pre>
     </li>
     <li>Migrations:
         <pre><code>php artisan migrate</code></pre>

@@ -1,6 +1,6 @@
 <?php
 // src/Models/GeneratedReport.php
-namespace Sazzad\LaravelDynamicReportGenerator\Models;
+namespace DevForest\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

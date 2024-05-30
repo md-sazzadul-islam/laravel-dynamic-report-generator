@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Sazzad\LaravelDynamicReportGenerator\Http\Controllers\ReportController;
+use DevForest\Http\Controllers\ReportController;
 
 Route::prefix('report-generator')->group(function () {
     Route::get('/', [ReportController::class, 'index']);
