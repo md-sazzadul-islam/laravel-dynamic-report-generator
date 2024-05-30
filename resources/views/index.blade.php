@@ -3,16 +3,47 @@
 @section('content')
     <div class="container">
         <h1>Report Generator</h1>
+        {{-- show $validator->fails() --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <form id="report-form" method="POST" action="{{ url('/report-generator/save-report') }}">
             @csrf
-            <div class="form-group">
-                <label for="name">Report Name</label>
-                <input type="text" id="name" name="name" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="query">Generated Query</label>
-                <textarea id="query" name="query" class="form-control" rows="5" required></textarea>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="name">Report Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="select_columns">Select columns</label>
+                        <input readonly type="text" id="select_columns" name="select_columns" class="form-control"
+                            required>
+                    </div>
+
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="main_table">Main Table</label>
+                        <input readonly type="text" id="main_table" name="main_table" class="form-control" required>
+                    </div>
+
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="query">Generated Query</label>
+                        <textarea id="query" name="query" class="form-control" rows="5" required></textarea>
+                    </div>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Save Report</button>
         </form>
@@ -59,6 +90,13 @@
                 });
             });
         });
+        /* database query generator function*/
+        function query_generator() {
+            let select_columns = $('#select_columns').val();
+            let main_table = $('#main_table').val();
+            query = `SELECT ${select_columns?select_columns:'*'} FROM ${main_table}`;
+            $('#query').val(query);
+        }
 
         function fetchColumns(table) {
             fetch(`/report-generator/columns/${table}`)
@@ -90,15 +128,35 @@
                         helper: 'clone'
                     });
 
-                    $('#query').droppable({
-                        accept: '.column, .foreign-key',
+                    $('#select_columns').droppable({
+                        accept: '.column',
                         drop: function(event, ui) {
                             let text = ui.helper.text();
-                            let query = $('#query').val();
-                            query += query ? `, ${text}` : text;
-                            $('#query').val(query);
+                            let select_columns = $('#select_columns').val();
+                            select_columns += select_columns ? `, ${text}` : text;
+                            $('#select_columns').val(select_columns.trim());
+                            query_generator();
                         }
                     });
+                    $('#main_table').droppable({
+                        accept: '.table',
+                        drop: function(event, ui) {
+                            let text = ui.helper.text();
+                            let main_table = $('#main_table').val();
+                            main_table += main_table ? `, ${text}` : text;
+                            $('#main_table').val(main_table.trim());
+                            query_generator();
+                        }
+                    });
+                    // $('#query').droppable({
+                    //     accept: '.column',
+                    //     drop: function(event, ui) {
+                    //         let text = ui.helper.text();
+                    //         let query = $('#query').val();
+                    //         query += query ? `, ${text}` : text;
+                    //         $('#query').val(query);
+                    //     }
+                    // });
                 });
         }
     </script>

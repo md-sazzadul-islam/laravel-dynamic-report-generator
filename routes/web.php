@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use DevForest\Http\Controllers\ReportController;
 
-Route::prefix('report-generator')->group(function () {
+Route::group(['prefix' => 'report-generator', 'middleware' => ['web']], function () {
     Route::get('/', [ReportController::class, 'index']);
     Route::post('/save-report', [ReportController::class, 'save']);
     Route::get('/reports', [ReportController::class, 'listReports']);

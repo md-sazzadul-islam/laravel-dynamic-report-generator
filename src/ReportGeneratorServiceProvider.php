@@ -3,6 +3,8 @@
 namespace DevForest;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use MdSazzadulIslam\LaravelDynamicReportGenerator\Http\Middleware\ShareErrorsFromSessionMiddleware;
 
 class ReportGeneratorServiceProvider extends ServiceProvider
 {
@@ -16,6 +18,20 @@ class ReportGeneratorServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../database/migrations/2024_05_29_000000_create_generated_reports_table.php' => database_path('migrations/2024_05_29_000000_create_generated_reports_table.php'),
         ], 'migrations');
+
+        Route::aliasMiddleware('share.errors', ShareErrorsFromSessionMiddleware::class);
+
+        $this->registerRoutes();
+    }
+    protected function registerRoutes()
+    {
+        Route::group([
+            'middleware' => ['web', 'share.errors'],
+            'namespace' => 'DevForest\ReportGenerator\Http\Controllers',
+            'prefix' => 'report-generator'
+        ], function () {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        });
     }
 
     public function register()

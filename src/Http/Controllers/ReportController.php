@@ -18,8 +18,24 @@ class ReportController extends Controller
 
     public function save(Request $request)
     {
+
+    
+        $request->validate([
+            'query' => ['required', function ($attribute, $value, $fail) {
+                $dangerousQueries = ['create', 'alter', 'truncate', 'drop', 'insert', 'update', 'delete'];
+                foreach ($dangerousQueries as $dangerousQuery) {
+                    if (preg_match("/\b($dangerousQuery)\b/i", strtolower($value))) {
+                        return $fail("Unable to execute {$dangerousQuery} query");
+                    }
+                }
+            }],
+            'name' => 'required',
+        ]);
+
+    
         $name = $request->input('name');
         $query = $request->input('query');
+
 
         GeneratedReport::create(['name' => $name, 'query' => $query]);
 
