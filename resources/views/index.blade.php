@@ -17,31 +17,42 @@
         <form id="report-form" method="POST" action="{{ url('/report-generator/save-report') }}">
             @csrf
             <div class="row">
-                <div class="col-4">
+                <div class="col-md-4 col-sm-6">
                     <div class="form-group">
                         <label for="name">Report Name</label>
                         <input type="text" id="name" name="name" class="form-control" required>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-md-4 col-sm-6">
                     <div class="form-group">
                         <label for="select_columns">Select columns</label>
-                        <input readonly type="text" id="select_columns" name="select_columns" class="form-control"
-                            required>
+                        <div>
+                            <div class="pull-left" style="width: 87%">
+                                <input readonly type="text" id="select_columns" name="select_columns"
+                                    class="form-control" required>
+                            </div>
+                            <div class="pull-left" style="width: 13%">
+                                <button type="button" id="select_columns_undo" class="btn btn-primary">
+                                    <i class="fa fa-share-square fa-flip"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
-                <div class="col-4">
+                <div class="col-md-4 col-sm-6">
                     <div class="form-group">
+
                         <label for="main_table">Main Table</label>
                         <input readonly type="text" id="main_table" name="main_table" class="form-control" required>
+
                     </div>
 
                 </div>
                 <div class="col-12">
                     <div class="form-group">
                         <label for="query">Generated Query</label>
-                        <textarea id="query" name="query" class="form-control" rows="5" required></textarea>
+                        <textarea readonly id="query" name="query" class="form-control" rows="5" required></textarea>
                     </div>
                 </div>
             </div>
@@ -89,6 +100,8 @@
                     fetchColumns(this.dataset.table);
                 });
             });
+
+
         });
         /* database query generator function*/
         function query_generator() {
@@ -98,17 +111,39 @@
             $('#query').val(query);
         }
 
+
+        $('#select_columns_undo').on('click', function() {
+            let currentColumns = $('#select_columns').val().split(',').map(col => col.trim()).filter(col => col);
+            if (currentColumns.length > 0) {
+                currentColumns.pop();
+                $('#select_columns').val(currentColumns.join(', '));
+            }
+            query_generator();
+        });
+
         function fetchColumns(table) {
             fetch(`/report-generator/columns/${table}`)
                 .then(response => response.json())
                 .then(data => {
                     let columnsDiv = document.getElementById('columns');
                     columnsDiv.innerHTML = '';
+                    var columnDiv = document.createElement('div');
+                    columnDiv.classList.add('column', 'draggable', 'border', 'p-2', 'mb-2');
+                    columnDiv.textContent = "*";
+                    columnDiv.dataset.column = "*";
+                    columnsDiv.appendChild(columnDiv);
+
+                    var columnDiv = document.createElement('div');
+                    columnDiv.classList.add('column', 'draggable', 'border', 'p-2', 'mb-2');
+                    columnDiv.textContent = "`" + table + "`.*";
+                    columnDiv.dataset.column = "`" + table + "`.*";
+                    columnsDiv.appendChild(columnDiv);
                     data.columns.forEach(column => {
                         let columnDiv = document.createElement('div');
                         columnDiv.classList.add('column', 'draggable', 'border', 'p-2', 'mb-2');
-                        columnDiv.textContent = column.Field;
-                        columnDiv.dataset.column = column.Field;
+                        // columnDiv.textContent = `${table}.${column.Field}`;
+                        columnDiv.textContent = "`" + table + "`.`" + column.Field + "`";
+                        columnDiv.dataset.column = "`" + table + "`.`" + column.Field + "`";
                         columnsDiv.appendChild(columnDiv);
                     });
 
@@ -128,23 +163,27 @@
                         helper: 'clone'
                     });
 
+
                     $('#select_columns').droppable({
                         accept: '.column',
                         drop: function(event, ui) {
                             let text = ui.helper.text();
-                            let select_columns = $('#select_columns').val();
-                            select_columns += select_columns ? `, ${text}` : text;
-                            $('#select_columns').val(select_columns.trim());
+
+                            let currentColumns = $('#select_columns').val().split(',').map(col => col
+                                .trim()).filter(col => col);
+                            if (!currentColumns.includes(text)) {
+                                currentColumns.push(text);
+                                $('#select_columns').val(currentColumns.join(', '));
+                            }
                             query_generator();
                         }
                     });
                     $('#main_table').droppable({
                         accept: '.table',
                         drop: function(event, ui) {
-                            let text = ui.helper.text();
-                            let main_table = $('#main_table').val();
-                            main_table += main_table ? `, ${text}` : text;
-                            $('#main_table').val(main_table.trim());
+                            let text = ui.helper.text().trim();
+                            text = "`" + text + "`";
+                            $('#main_table').val(text);
                             query_generator();
                         }
                     });

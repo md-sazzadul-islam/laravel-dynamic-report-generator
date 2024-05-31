@@ -24,7 +24,7 @@
 ];</code></pre>
     </li>
     <li>Publish the package assets:
-        <pre><code>php artisan vendor:publish --provider="DevForest\ReportGeneratorServiceProvider" --tag=migrations</code></pre>
+        <pre><code>php artisan vendor:publish --provider="DevForest\ReportGeneratorServiceProvider"</code></pre>
     </li>
     <li>Migrations:
         <pre><code>php artisan migrate</code></pre>

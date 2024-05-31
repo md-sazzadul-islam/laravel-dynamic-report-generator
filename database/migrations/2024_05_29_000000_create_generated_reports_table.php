@@ -10,6 +10,8 @@ class CreateGeneratedReportsTable extends Migration
     {
         Schema::create('generated_reports', function (Blueprint $table) {
             $table->id();
+            $table->string('slug')->unique();
+            $table->json('data_set');
             $table->string('name');
             $table->text('query');
             $table->timestamps();

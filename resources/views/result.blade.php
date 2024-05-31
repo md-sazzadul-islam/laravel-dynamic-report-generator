@@ -3,25 +3,30 @@
 @section('content')
     <div class="container">
         <h1>Report Results</h1>
-        @if (!empty($results))
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        @foreach ($columns as $column)
-                            <th>{{ $column }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($results as $row)
+        @if (!empty($paginatedResults))
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
                         <tr>
                             @foreach ($columns as $column)
-                                <td>{{ $row->$column }}</td>
+                                <th>{{ Str::title(str_replace('_', ' ', $column)) }}</th>
                             @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($paginatedResults as $row)
+                            <tr>
+                                @foreach ($columns as $column)
+                                    <td>{{ $row->$column }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-center pb-3">
+                    {{ $paginatedResults->links() }}
+                </div>
+            </div>
         @else
             <p>No results found.</p>
         @endif

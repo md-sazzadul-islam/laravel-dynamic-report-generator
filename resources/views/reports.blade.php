@@ -7,6 +7,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Slug</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -14,8 +15,9 @@
                 @foreach ($reports as $report)
                     <tr>
                         <td>{{ $report->name }}</td>
+                        <td>{{ $report->slug }}</td>
                         <td>
-                            <a href="{{ url('/report-generator/execute-report', $report->id) }}"
+                            <a href="{{ url('/report-generator/execute-report', $report->slug) }}"
                                 class="btn btn-primary">Execute</a>
                         </td>
                     </tr>

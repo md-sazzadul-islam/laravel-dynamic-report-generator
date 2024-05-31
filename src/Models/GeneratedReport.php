@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class GeneratedReport extends Model
 {
-    protected $fillable = ['name', 'query'];
+    protected $fillable = ['name', 'slug', 'query', 'data_set'];
+    protected $casts = [
+        'data_set' => 'array'
+    ];
 }
