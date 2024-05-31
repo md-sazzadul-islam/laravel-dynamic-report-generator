@@ -2,11 +2,16 @@
 <h1>Laravel Dynamic Report Generator</h1>
 
 <p>A dynamic report generator package for Laravel with a drag-and-drop interface. This package allows users to generate SQL queries by dragging and dropping tables and columns, and then displays the results.</p>
-
+<h4>Drag-and-drop interface</h4>
+<img src="https://github.com/md-sazzadul-islam/laravel-dynamic-report-generator/assets/26510351/e03d9679-5a16-4160-8804-4c76ad8c43ff" alt="Drag-and-drop interface">
+<h4>Saved Reports</h4>
+<img src="https://github.com/md-sazzadul-islam/laravel-dynamic-report-generator/assets/26510351/81ef2c87-14c6-4572-baf8-f8da31f6868c" alt="Saved Reports">
+<h4>Display query results</h4>
+<img src="https://github.com/md-sazzadul-islam/laravel-dynamic-report-generator/assets/26510351/81ef2c87-14c6-4572-baf8-f8da31f6868c" alt="Display query results">
 <h2>Features</h2>
 <ul>
     <li>Drag-and-drop interface for selecting tables and columns</li>
-    <li>Join multiple tables using foreign key relationships</li>
+    <li>Join multiple tables using foreign key relationships (Coming Soon)</li>
     <li>Generate SQL queries dynamically</li>
     <li>Display query results in a table format</li>
 </ul>
