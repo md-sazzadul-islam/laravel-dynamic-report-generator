@@ -7,7 +7,7 @@
 <h4>Saved Reports</h4>
 <img src="https://github.com/md-sazzadul-islam/laravel-dynamic-report-generator/assets/26510351/81ef2c87-14c6-4572-baf8-f8da31f6868c" alt="Saved Reports">
 <h4>Display query results</h4>
-<img src="https://github.com/md-sazzadul-islam/laravel-dynamic-report-generator/assets/26510351/81ef2c87-14c6-4572-baf8-f8da31f6868c" alt="Display query results">
+<img src="https://github.com/md-sazzadul-islam/laravel-dynamic-report-generator/assets/26510351/889d3237-bdc3-40bb-a590-1433cff78c79" alt="Display query results">
 <h2>Features</h2>
 <ul>
     <li>Drag-and-drop interface for selecting tables and columns</li>
