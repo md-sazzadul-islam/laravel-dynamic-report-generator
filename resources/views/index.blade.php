@@ -17,13 +17,13 @@
         <form id="report-form" method="POST" action="{{ url('/report-generator/save-report') }}">
             @csrf
             <div class="row">
-                <div class="col-md-4 col-sm-6">
+                <div class="col-md-12 col-sm-12">
                     <div class="form-group">
                         <label for="name">Report Name</label>
                         <input type="text" id="name" name="name" class="form-control" required>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6">
+                <div class="col-md-6 col-sm-6">
                     <div class="form-group">
                         <label for="select_columns">Select columns</label>
                         <div>
@@ -40,12 +40,29 @@
                     </div>
 
                 </div>
-                <div class="col-md-4 col-sm-6">
+                <div class="col-md-6 col-sm-6">
                     <div class="form-group">
 
                         <label for="main_table">Main Table</label>
                         <input readonly type="text" id="main_table" name="main_table" class="form-control" required>
 
+                    </div>
+
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <label for="joined_tables">Joined tables</label>
+                        <div>
+                            <div class="pull-left" style="width: 90%">
+                                <input readonly type="text" id="joined_tables" name="joined_tables" class="form-control"
+                                    >
+                            </div>
+                            <div class="pull-left" style="width: 10%">
+                                <button type="button" id="joined_tables_undo" class="btn btn-primary">
+                                    <i class="fa fa-share-square fa-flip"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -63,7 +80,7 @@
 
             <div class="col-md-4">
                 <div class="panel">
-                    <h4>Table list</h4>
+                    <h4>Table list (Frist click on table)</h4>
                     <div id="tables" class="droppable">
                         @foreach ($tables as $table)
                             <div class="table draggable border p-2 mb-2" data-table="{{ $table->$tables_in_database }}">
@@ -81,7 +98,7 @@
             </div>
             <div class="col-md-4">
                 <div class="panel">
-                    <h4>Selected table's foreign key</h4>
+                    <h4>Can be joined with selected table's</h4>
                     <div id="foreign-keys" class="droppable"></div>
                 </div>
             </div>
@@ -107,7 +124,8 @@
         function query_generator() {
             let select_columns = $('#select_columns').val();
             let main_table = $('#main_table').val();
-            query = `SELECT ${select_columns?select_columns:'*'} FROM ${main_table}`;
+            let joined_tables = $('#joined_tables').val();
+            query = `SELECT ${select_columns} FROM ${main_table} ${joined_tables}`;
             $('#query').val(query);
         }
 
@@ -153,9 +171,9 @@
                         let fkDiv = document.createElement('div');
                         fkDiv.classList.add('foreign-key', 'draggable', 'border', 'p-2', 'mb-2');
                         fkDiv.textContent =
-                            `Join on ${fk.COLUMN_NAME} -> ${fk.REFERENCED_TABLE_NAME}.${fk.REFERENCED_COLUMN_NAME}`;
+                            `JOIN ${fk.TABLE_NAME} ON ${table}.${fk.REFERENCED_COLUMN_NAME} = ${fk.TABLE_NAME}.${fk.COLUMN_NAME}`;
                         fkDiv.dataset.join =
-                            `JOIN ${fk.REFERENCED_TABLE_NAME} ON ${table}.${fk.COLUMN_NAME} = ${fk.REFERENCED_TABLE_NAME}.${fk.REFERENCED_COLUMN_NAME}`;
+                            `JOIN ${fk.TABLE_NAME} ON ${table}.${fk.REFERENCED_COLUMN_NAME} = ${fk.TABLE_NAME}.${fk.COLUMN_NAME}`;
                         foreignKeysDiv.appendChild(fkDiv);
                     });
 
@@ -164,6 +182,20 @@
                     });
 
 
+                    $('#joined_tables').droppable({
+                        accept: '.foreign-key',
+                        drop: function(event, ui) {
+                            let text = ui.helper.text();
+
+                            let currentColumns = $('#joined_tables').val().split(',').map(col => col
+                                .trim()).filter(col => col);
+                            if (!currentColumns.includes(text)) {
+                                currentColumns.push(text);
+                                $('#joined_tables').val(currentColumns.join(' '));
+                            }
+                            query_generator();
+                        }
+                    });
                     $('#select_columns').droppable({
                         accept: '.column',
                         drop: function(event, ui) {

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <h1>Report Results</h1>
-        @if (!empty($paginatedResults))
+        @if (!empty($paginatedResults->items()))
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>

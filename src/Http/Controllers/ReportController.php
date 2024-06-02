@@ -29,6 +29,14 @@ class ReportController extends Controller
                         return $fail("Unable to execute {$dangerousQuery} query");
                     }
                 }
+                // Check if the query is executable
+                try {
+                    DB::beginTransaction();
+                    DB::select(DB::raw($value . ' limit 1'));
+                    DB::rollBack();
+                } catch (\Exception $e) {
+                    return $fail("The query is not executable: " . $e->getMessage());
+                }
             }],
             'name' => 'required',
         ]);
@@ -56,23 +64,18 @@ class ReportController extends Controller
     {
         $report = GeneratedReport::where('slug', $slug)->firstOrFail();
 
-        // Retrieve the current page from the request or set default to 1
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-
-        // Set the number of results per page
         $perPage = 10;
-
-        // Calculate the offset for the query
         $offset = ($currentPage - 1) * $perPage;
 
-        // Execute the raw query with limit and offset for pagination
         $paginatedQuery = $report->query . " LIMIT $perPage OFFSET $offset";
         $results = DB::select(DB::raw($paginatedQuery));
 
-        // Fetch the total count of records without limit for pagination
-        $totalRecords = DB::select(DB::raw("SELECT COUNT(*) as count FROM ({$report->query}) as subquery"))[0]->count;
+        $data_set = json_decode($report->data_set, false);
+        $custom_query_count = "select count(*) as count from " . $data_set->main_table . " " . $data_set->joined_tables;
 
-        // Create a LengthAwarePaginator instance
+        $totalRecords = DB::select(DB::raw($custom_query_count))[0]->count;
+        
         $paginatedResults = new LengthAwarePaginator($results, $totalRecords, $perPage, $currentPage, [
             'path' => LengthAwarePaginator::resolveCurrentPath(),
         ]);
@@ -87,13 +90,12 @@ class ReportController extends Controller
         $columns = DB::select("SHOW COLUMNS FROM {$table}");
         $foreignKeys  = DB::select("
         SELECT
-            COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+            COLUMN_NAME, TABLE_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
         FROM
             INFORMATION_SCHEMA.KEY_COLUMN_USAGE
         WHERE
-            TABLE_SCHEMA = DATABASE() AND
-            TABLE_NAME = ? AND
-            REFERENCED_TABLE_NAME IS NOT NULL
+            TABLE_SCHEMA = DATABASE()  AND
+            REFERENCED_TABLE_NAME =?
     ", [$table]);
         return response()->json(['columns' => $columns, 'foreignKeys' => $foreignKeys]);
     }
