@@ -11,7 +11,7 @@
 <h2>Features</h2>
 <ul>
     <li>Drag-and-drop interface for selecting tables and columns</li>
-    <li>Join multiple tables using foreign key relationships (Coming Soon)</li>
+    <li>Join multiple tables using foreign key relationships</li>
     <li>Generate SQL queries dynamically</li>
     <li>Display query results in a table format</li>
 </ul>
