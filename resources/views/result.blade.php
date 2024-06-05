@@ -3,7 +3,11 @@
 @section('content')
     <div class="container">
         <h1>Report Results</h1>
-        @if (!empty($paginatedResults->items()))
+        @if (($isPaginated && $results->isEmpty()) || (!$isPaginated && empty($results)))
+            <div class="alert alert-info">
+                No results found.
+            </div>
+        @else
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
@@ -14,7 +18,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($paginatedResults as $row)
+                        @foreach ($results as $row)
                             <tr>
                                 @foreach ($columns as $column)
                                     <td>{{ $row->$column }}</td>
@@ -23,12 +27,12 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-center pb-3">
-                    {{ $paginatedResults->links() }}
-                </div>
+                @if ($isPaginated)
+                    <div class="d-flex justify-content-center pb-3">
+                        {{ $results->links() }}
+                    </div>
+                @endif
             </div>
-        @else
-            <p>No results found.</p>
         @endif
     </div>
 @endsection

@@ -3,7 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use DevForest\Http\Controllers\ReportController;
 
-Route::group(['prefix' => 'report-generator', 'middleware' => ['web']], function () {
+$middleware = config('report-generator.requireAuthentication') ? ['web', 'auth'] : ['web'];
+
+
+Route::group(['prefix' => 'report-generator', 'middleware' => $middleware], function () {
     Route::get('/', [ReportController::class, 'index']);
     Route::post('/save-report', [ReportController::class, 'save']);
     Route::get('/reports', [ReportController::class, 'listReports']);

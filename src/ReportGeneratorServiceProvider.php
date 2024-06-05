@@ -2,6 +2,7 @@
 // src/ReportGeneratorServiceProvider.php
 namespace DevForest;
 
+use DevForest\Services\ReportService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use MdSazzadulIslam\LaravelDynamicReportGenerator\Http\Middleware\ShareErrorsFromSessionMiddleware;
@@ -15,6 +16,10 @@ class ReportGeneratorServiceProvider extends ServiceProvider
         // $this->publishes([
         //     __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-dynamic-report-generator'),
         // ], 'views');
+
+        // $this->publishes([
+        //     __DIR__ . '/../config/report-generator.php' => config_path('report-generator.php'),
+        // ]);
         $this->publishes([
             __DIR__ . '/../database/migrations/2024_05_29_000000_create_generated_reports_table.php' => database_path('migrations/2024_05_29_000000_create_generated_reports_table.php'),
         ], 'migrations');
@@ -39,6 +44,10 @@ class ReportGeneratorServiceProvider extends ServiceProvider
 
     public function register()
     {
-        // Register package services if needed
+        $this->app->singleton(ReportService::class, function ($app) {
+            return new ReportService();
+        });
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/report-generator.php', 'report-generator');
     }
 }
