@@ -32,7 +32,7 @@
                                     class="form-control" required>
                             </div>
                             <div class="pull-left" style="width: 13%">
-                                <button type="button" id="select_columns_undo" class="btn btn-primary">
+                                <button type="button" id="select_columns_undo" class="btn btn-info btn-flip">
                                     <i class="fa fa-share-square fa-flip"></i>
                                 </button>
                             </div>
@@ -58,7 +58,7 @@
                                     >
                             </div>
                             <div class="pull-left" style="width: 10%">
-                                <button type="button" id="joined_tables_undo" class="btn btn-primary">
+                                <button type="button" id="joined_tables_undo" class="btn btn-info btn-flip">
                                     <i class="fa fa-share-square fa-flip"></i>
                                 </button>
                             </div>
@@ -66,6 +66,25 @@
                     </div>
 
                 </div>
+                
+                <div class="col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <label for="group_by_columns">Group By Columns</label>
+                        <div>
+                            <div class="pull-left" style="width: 90%">
+                                <input readonly type="text" id="group_by_columns" name="group_by_columns" class="form-control"
+                                    >
+                            </div>
+                            <div class="pull-left" style="width: 10%">
+                                <button type="button" id="group_by_column_undo" class="btn btn-info btn-flip">
+                                    <i class="fa fa-share-square fa-flip"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="col-12">
                     <div class="form-group">
                         <label for="query">Generated Query</label>
@@ -124,8 +143,13 @@
         function query_generator() {
             let select_columns = $('#select_columns').val();
             let main_table = $('#main_table').val();
-            let joined_tables = $('#joined_tables').val();
-            query = `SELECT ${select_columns} FROM ${main_table} ${joined_tables}`;
+            let joined_tables = $('#joined_tables').val().replace(' | ', ' ');
+            let groupby_columns = $('#group_by_columns').val();            
+            let groupby_query = '';
+            if(groupby_columns) {
+                groupby_query = `GROUP BY ${groupby_columns}`;
+            }
+            query = `SELECT ${select_columns} FROM ${main_table} ${joined_tables} ${groupby_query}`;
             $('#query').val(query);
         }
 
@@ -135,6 +159,24 @@
             if (currentColumns.length > 0) {
                 currentColumns.pop();
                 $('#select_columns').val(currentColumns.join(', '));
+            }
+            query_generator();
+        });
+
+        $('#joined_tables_undo').on('click', function() {
+            let currentColumns = $('#joined_tables').val().split('||').map(col => col.trim()).filter(col => col);
+            if (currentColumns.length > 0) {
+                currentColumns.pop();
+                $('#joined_tables').val(currentColumns.join(', '));
+            }
+            query_generator();
+        });
+
+        $('#group_by_column_undo').on('click', function() {
+            let currentColumns = $('#group_by_columns').val().split(',').map(col => col.trim()).filter(col => col);
+            if (currentColumns.length > 0) {
+                currentColumns.pop();
+                $('#group_by_columns').val(currentColumns.join(', '));
             }
             query_generator();
         });
@@ -174,6 +216,8 @@
                             `JOIN ${fk.TABLE_NAME} ON ${table}.${fk.REFERENCED_COLUMN_NAME} = ${fk.TABLE_NAME}.${fk.COLUMN_NAME}`;
                         fkDiv.dataset.join =
                             `JOIN ${fk.TABLE_NAME} ON ${table}.${fk.REFERENCED_COLUMN_NAME} = ${fk.TABLE_NAME}.${fk.COLUMN_NAME}`;
+                        
+                        
                         foreignKeysDiv.appendChild(fkDiv);
                     });
 
@@ -191,7 +235,7 @@
                                 .trim()).filter(col => col);
                             if (!currentColumns.includes(text)) {
                                 currentColumns.push(text);
-                                $('#joined_tables').val(currentColumns.join(' '));
+                                $('#joined_tables').val(currentColumns.join(' | '));
                             }
                             query_generator();
                         }
@@ -210,6 +254,22 @@
                             query_generator();
                         }
                     });
+
+                    $('#group_by_columns').droppable({
+                        accept: '.column',
+                        drop: function(event, ui) {
+                            let text = ui.helper.text();
+
+                            let currentColumns = $('#group_by_columns').val().split(',').map(col => col
+                                .trim()).filter(col => col);
+                            if (!currentColumns.includes(text)) {
+                                currentColumns.push(text);
+                                $('#group_by_columns').val(currentColumns.join(', '));
+                            }
+                            query_generator();
+                        }
+                    });
+
                     $('#main_table').droppable({
                         accept: '.table',
                         drop: function(event, ui) {
