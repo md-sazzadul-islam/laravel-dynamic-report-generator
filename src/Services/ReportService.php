@@ -32,7 +32,7 @@ class ReportService
                 // Check if the query is executable
                 try {
                     DB::beginTransaction();
-                    DB::select(DB::raw($value . ' limit 1'));
+                    DB::select(DB::raw($value . ' limit 1')->getValue(DB::getQueryGrammar()));
                     DB::rollBack();
                 } catch (\Exception $e) {
                     return $fail("The query is not executable: " . $e->getMessage());
@@ -69,12 +69,12 @@ class ReportService
             $query = $report->query;
         }
 
-        $results = DB::select(DB::raw($query));
+        $results = DB::select(DB::raw($query)->getValue(DB::getQueryGrammar()));
 
         $data_set = json_decode($report->data_set, false);
         $custom_query_count = "select count(*) as count from " . $data_set->main_table . " " . $data_set->joined_tables;
 
-        $totalRecords = DB::select(DB::raw($custom_query_count))[0]->count;
+        $totalRecords = DB::select(DB::raw($custom_query_count)->getValue(DB::getQueryGrammar()))[0]->count;
 
         if ($isPaginated) {
             $paginatedResults = new LengthAwarePaginator($results, $totalRecords, $perPage, $currentPage, [
