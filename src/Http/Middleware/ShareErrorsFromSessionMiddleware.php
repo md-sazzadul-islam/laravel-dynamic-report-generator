@@ -1,6 +1,6 @@
 <?php
 
-namespace MdSazzadulIslam\LaravelDynamicReportGenerator\Http\Middleware;
+namespace DevForest\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\ViewErrorBag;

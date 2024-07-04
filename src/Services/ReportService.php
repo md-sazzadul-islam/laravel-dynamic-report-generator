@@ -19,27 +19,8 @@ class ReportService
         return 'Tables_in_' . DB::connection()->getDatabaseName();
     }
 
-    public function validateAndSaveReport($request)
+    public function saveReport($request)
     {
-        $request->validate([
-            'query' => ['required', function ($attribute, $value, $fail) {
-                $dangerousQueries = ['create', 'alter', 'truncate', 'drop', 'insert', 'update', 'delete'];
-                foreach ($dangerousQueries as $dangerousQuery) {
-                    if (preg_match("/\b($dangerousQuery)\b/i", strtolower($value))) {
-                        return $fail("Unable to execute {$dangerousQuery} query");
-                    }
-                }
-                // Check if the query is executable
-                try {
-                    DB::beginTransaction();
-                    DB::select(DB::raw($value . ' limit 1')->getValue(DB::getQueryGrammar()));
-                    DB::rollBack();
-                } catch (\Exception $e) {
-                    return $fail("The query is not executable: " . $e->getMessage());
-                }
-            }],
-            'name' => 'required',
-        ]);
 
         $data_set = json_encode($request->except('_token'));
         $name = $request->input('name');
@@ -49,9 +30,31 @@ class ReportService
         GeneratedReport::create(['name' => $name, 'slug' => $slug, 'data_set' => $data_set, 'query' => $query]);
     }
 
+    public function updateReport($request, $id)
+    {
+        $report = $this->findOrFail($id);
+        $data_set = json_encode($request->except('_token', '_method'));
+        $name = $request->input('name');
+        $slug = Str::slug($request->input('name'));
+        $query = $request->input('query');
+
+        $report->update(['name' => $name, 'slug' => $slug, 'data_set' => $data_set, 'query' => $query]);
+    }
+
     public function listReports()
     {
         return GeneratedReport::all();
+    }
+    public function deleteReport($id)
+    {
+        $report = $this->findOrFail($id);
+
+        $report->delete();
+        return $report;
+    }
+    public function findOrFail($id)
+    {
+        return GeneratedReport::findOrFail($id);
     }
 
     public function executeReport($slug)

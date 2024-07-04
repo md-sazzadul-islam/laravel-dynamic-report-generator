@@ -5,7 +5,7 @@ namespace DevForest;
 use DevForest\Services\ReportService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use MdSazzadulIslam\LaravelDynamicReportGenerator\Http\Middleware\ShareErrorsFromSessionMiddleware;
+use DevForest\LaravelDynamicReportGenerator\Http\Middleware\ShareErrorsFromSessionMiddleware;
 
 class ReportGeneratorServiceProvider extends ServiceProvider
 {
@@ -17,9 +17,9 @@ class ReportGeneratorServiceProvider extends ServiceProvider
         //     __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-dynamic-report-generator'),
         // ], 'views');
 
-        // $this->publishes([
-        //     __DIR__ . '/../config/report-generator.php' => config_path('report-generator.php'),
-        // ]);
+        $this->publishes([
+            __DIR__ . '/../config/report-generator.php' => config_path('report-generator.php'),
+        ],'config');
         $this->publishes([
             __DIR__ . '/../database/migrations/2024_05_29_000000_create_generated_reports_table.php' => database_path('migrations/2024_05_29_000000_create_generated_reports_table.php'),
         ], 'migrations');

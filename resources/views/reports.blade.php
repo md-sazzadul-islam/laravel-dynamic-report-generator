@@ -16,9 +16,20 @@
                     <tr>
                         <td>{{ $report->name }}</td>
                         <td>{{ $report->slug }}</td>
-                        <td>
-                            <a href="{{ url('/report-generator/execute-report', $report->slug) }}"
-                                class="btn btn-primary">Execute</a>
+                        <td width="250">
+                            <div class="d-flex justify-content-around align-items-center">
+                                <a href="{{ url('/report-generator/execute-report', $report->slug) }}"
+                                    class="btn btn-primary">Execute</a>
+
+                                <a href="{{ url('/report-generator/reports/'.$report->id.'/edit') }}"
+                                    class="btn btn-warning">Edit</a>
+                                <form action="{{ url('report-generator/reports/' . $report->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

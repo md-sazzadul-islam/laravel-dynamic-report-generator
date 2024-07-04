@@ -13,6 +13,7 @@ Route::group(['prefix' => 'report-generator', 'middleware' => $middleware], func
     Route::get('/execute-report/{id}', [ReportController::class, 'execute']);
     Route::get('/columns/{table}', [ReportController::class, 'getColumns']);
 
-    Route::get('/reports/{id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
-    Route::put('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
+    Route::get('/reports/{id}/edit', [ReportController::class, 'edit']);
+    Route::put('/reports/{id}', [ReportController::class, 'update']);
+    Route::delete('/reports/{id}', [ReportController::class, 'destroy']);
 });
