@@ -40,7 +40,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="col-md-6 col-sm-6">
                     <div class="form-group">
@@ -64,7 +63,22 @@
                             </div>
                         </div>
                     </div>
-
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <label for="group_by_columns">Group By Columns</label>
+                        <div>
+                            <div class="pull-left" style="width: 87%">
+                                <input readonly type="text" id="group_by_columns" name="group_by_columns"
+                                    class="form-control" value="{{ $report_data_set->group_by_columns ?? '' }}">
+                            </div>
+                            <div class="pull-left" style="width: 13%">
+                                <button type="button" id="group_by_columns_undo" class="btn btn-primary">
+                                    <i class="fa fa-share-square fa-flip"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12">
                     <div class="form-group">
@@ -120,7 +134,12 @@
             let select_columns = $('#select_columns').val();
             let main_table = $('#main_table').val();
             let joined_tables = $('#joined_tables').val();
-            query = `SELECT ${select_columns} FROM ${main_table} ${joined_tables}`;
+            let group_by_columns = $('#group_by_columns').val();
+
+            let query = `SELECT ${select_columns} FROM ${main_table} ${joined_tables}`;
+            if (group_by_columns) {
+                query += ` GROUP BY ${group_by_columns}`;
+            }
             $('#query').val(query);
         }
 
@@ -133,12 +152,31 @@
             query_generator();
         });
 
+        $('#group_by_columns_undo').on('click', function() {
+            let currentColumns = $('#group_by_columns').val().split(',').map(col => col.trim()).filter(col => col);
+            if (currentColumns.length > 0) {
+                currentColumns.pop();
+                $('#group_by_columns').val(currentColumns.join(', '));
+            }
+            query_generator();
+        });
+
+        $('#joined_tables_undo').on('click', function() {
+            let currentColumns = $('#joined_tables').val().split('|').map(col => col.trim()).filter(col => col);
+            if (currentColumns.length > 0) {
+                currentColumns.pop();
+                $('#joined_tables').val(currentColumns.join(', '));
+            }
+            query_generator();
+        });
+
         function fetchColumns(table) {
             fetch(`/report-generator/columns/${table}`)
                 .then(response => response.json())
                 .then(data => {
                     let columnsDiv = document.getElementById('columns');
                     columnsDiv.innerHTML = '';
+
                     var columnDiv = document.createElement('div');
                     columnDiv.classList.add('column', 'draggable', 'border', 'p-2', 'mb-2');
                     columnDiv.textContent = "*";
@@ -150,6 +188,7 @@
                     columnDiv.textContent = "`" + table + "`.*";
                     columnDiv.dataset.column = "`" + table + "`.*";
                     columnsDiv.appendChild(columnDiv);
+
                     data.columns.forEach(column => {
                         let columnDiv = document.createElement('div');
                         columnDiv.classList.add('column', 'draggable', 'border', 'p-2', 'mb-2');
@@ -187,12 +226,14 @@
                             query_generator();
                         }
                     });
+
                     $('#select_columns').droppable({
                         accept: '.column',
                         drop: function(event, ui) {
                             let text = ui.helper.text();
                             let currentColumns = $('#select_columns').val().split(',').map(col => col
-                            .trim()).filter(col => col);
+                                .trim()).filter(
+                                col => col);
                             if (!currentColumns.includes(text)) {
                                 currentColumns.push(text);
                                 $('#select_columns').val(currentColumns.join(', '));
@@ -200,6 +241,22 @@
                             query_generator();
                         }
                     });
+
+                    $('#group_by_columns').droppable({
+                        accept: '.column',
+                        drop: function(event, ui) {
+                            let text = ui.helper.text();
+                            let currentColumns = $('#group_by_columns').val().split(',').map(col => col
+                                .trim()).filter(
+                                col => col);
+                            if (!currentColumns.includes(text)) {
+                                currentColumns.push(text);
+                                $('#group_by_columns').val(currentColumns.join(', '));
+                            }
+                            query_generator();
+                        }
+                    });
+
                     $('#main_table').droppable({
                         accept: '.table',
                         drop: function(event, ui) {
@@ -209,7 +266,8 @@
                             query_generator();
                         }
                     });
-                });
+                })
+                .catch(error => console.error('Error:', error));
         }
     </script>
 @endpush

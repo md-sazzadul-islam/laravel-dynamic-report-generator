@@ -75,9 +75,13 @@ class ReportService
         $results = DB::select(DB::raw($query)->getValue(DB::getQueryGrammar()));
 
         $data_set = json_decode($report->data_set, false);
-        $custom_query_count = "select count(*) as count from " . $data_set->main_table . " " . $data_set->joined_tables;
-
-        $totalRecords = DB::select(DB::raw($custom_query_count)->getValue(DB::getQueryGrammar()))[0]->count;
+        $group_by = (isset($data_set->group_by_columns) ? ($data_set->group_by_columns ? " Group By " . $data_set->group_by_columns : "") : "");
+        $custom_query_count = "select count(*) as count from " . $data_set->main_table . " " . str_replace("|", "", $data_set->joined_tables) . " " . $group_by;
+        $totalRecords = DB::select(DB::raw($custom_query_count)->getValue(DB::getQueryGrammar()));
+        $totalRecords = 0;
+        if ($totalRecords) {
+            $totalRecords = $totalRecords[0]->count;
+        } else
 
         if ($isPaginated) {
             $paginatedResults = new LengthAwarePaginator($results, $totalRecords, $perPage, $currentPage, [

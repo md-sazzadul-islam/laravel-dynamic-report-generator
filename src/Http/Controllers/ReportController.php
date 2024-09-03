@@ -25,7 +25,7 @@ class ReportController extends Controller
     }
 
     public function save(CreateGeneratedReport $request)
-    {
+    {   dd($request);
         $this->reportService->saveReport($request);
         return redirect('/report-generator/reports');
     }

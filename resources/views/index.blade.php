@@ -164,7 +164,7 @@
         });
 
         $('#joined_tables_undo').on('click', function() {
-            let currentColumns = $('#joined_tables').val().split('||').map(col => col.trim()).filter(col => col);
+            let currentColumns = $('#joined_tables').val().split('|').map(col => col.trim()).filter(col => col);
             if (currentColumns.length > 0) {
                 currentColumns.pop();
                 $('#joined_tables').val(currentColumns.join(', '));
